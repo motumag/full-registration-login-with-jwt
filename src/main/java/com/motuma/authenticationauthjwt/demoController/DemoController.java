@@ -1,4 +1,4 @@
-package com.motuma.authenticationauthjwt.demo;
+package com.motuma.authenticationauthjwt.demoController;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

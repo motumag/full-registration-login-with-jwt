@@ -1,4 +1,4 @@
-package com.motuma.authenticationauthjwt.user;
+package com.motuma.authenticationauthjwt.userModel;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

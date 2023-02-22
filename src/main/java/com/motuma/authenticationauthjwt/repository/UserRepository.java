@@ -1,6 +1,6 @@
 package com.motuma.authenticationauthjwt.repository;
 
-import com.motuma.authenticationauthjwt.user.User;
+import com.motuma.authenticationauthjwt.userModel.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
