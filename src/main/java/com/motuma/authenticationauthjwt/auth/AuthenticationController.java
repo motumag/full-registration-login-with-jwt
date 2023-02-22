@@ -29,6 +29,15 @@ public class AuthenticationController {
         }
         return ResponseEntity.ok(service.register(request));
     }
+    @PostMapping("/register/admin")
+    public ResponseEntity<?> registerAdmin(@RequestBody RegisterRequest request) {
+
+        if (service.findByEmail(request.getEmail()).isPresent()) {
+            ErrorResponse errorResponse= new ErrorResponse("User Exist");
+            return new ResponseEntity<>(errorResponse, HttpStatus.IM_USED);
+        }
+        return ResponseEntity.ok(service.registerAdmin(request));
+    }
 
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
@@ -37,7 +46,7 @@ public class AuthenticationController {
     @PostMapping("/refreshtoken")
     public ResponseEntity<?> refreshtoken(@RequestBody TokenRefreshRequest request) {
         String requestRefreshToken = request.getRefreshToken();
-
+//        System.out.println(requestRefreshToken+ "The incommig refresh token request");
         return service.findByToken(requestRefreshToken)
                 .map(service::verifyExpiration)
                 .map(RefreshToken::getUser)

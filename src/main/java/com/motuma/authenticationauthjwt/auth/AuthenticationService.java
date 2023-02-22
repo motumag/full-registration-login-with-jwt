@@ -8,7 +8,6 @@ import com.motuma.authenticationauthjwt.userModel.RefreshToken;
 import com.motuma.authenticationauthjwt.userModel.Role;
 import com.motuma.authenticationauthjwt.userModel.User;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -69,6 +68,20 @@ public class AuthenticationService {
                 .token(jwtToken)
                 .build();
     }
+    public AuthenticationResponse registerAdmin(RegisterRequest request) {
+        var user= User.builder()
+                .firstName(request.getFirstname())
+                .lastName(request.getLastname())
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .role(Role.ADMIN)
+                .build();
+        repository.save(user);
+        var jwtToken=jwtService.generateToken(user);
+        return AuthenticationResponse.builder()
+                .token(jwtToken)
+                .build();
+    }
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -78,7 +91,7 @@ public class AuthenticationService {
         );
         var user=repository.findByEmail(request.getEmail()).orElseThrow();
         var jwtToken=jwtService.generateToken(user);
-        //Just here to add the refresh token
+        //Just here add the refresh token
         RefreshToken refreshToken = createRefreshToken(user.getId());
         refreshTokenRepository.save(refreshToken);
         //==========refresh token is added===========//
