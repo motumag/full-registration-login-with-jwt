@@ -1,6 +1,8 @@
 package com.motuma.authenticationauthjwt.auth;
 
 import com.motuma.authenticationauthjwt.config.JwtService;
+import com.motuma.authenticationauthjwt.exception.TokenRefreshException;
+import com.motuma.authenticationauthjwt.userModel.RefreshToken;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthenticationController {
     private final AuthenticationService service;
+    private final JwtService jwtService;
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
@@ -30,6 +33,20 @@ public class AuthenticationController {
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
         return ResponseEntity.ok(service.authenticate(request));
+    }
+    @PostMapping("/refreshtoken")
+    public ResponseEntity<?> refreshtoken(@RequestBody TokenRefreshRequest request) {
+        String requestRefreshToken = request.getRefreshToken();
+
+        return service.findByToken(requestRefreshToken)
+                .map(service::verifyExpiration)
+                .map(RefreshToken::getUser)
+                .map(user -> {
+                    var jwtToken=jwtService.generateToken(user);
+                    return ResponseEntity.ok(new TokenRefreshResponse(jwtToken, requestRefreshToken));
+                })
+                .orElseThrow(() -> new TokenRefreshException(requestRefreshToken,
+                        "Refresh token is not in database!"));
     }
     @Data
     class ErrorResponse{

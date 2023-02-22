@@ -78,6 +78,10 @@ public class AuthenticationService {
         );
         var user=repository.findByEmail(request.getEmail()).orElseThrow();
         var jwtToken=jwtService.generateToken(user);
+        //Just here to add the refresh token
+        RefreshToken refreshToken = createRefreshToken(user.getId());
+        refreshTokenRepository.save(refreshToken);
+        //==========refresh token is added===========//
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .build();
